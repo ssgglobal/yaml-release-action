@@ -1,0 +1,190 @@
+#!/usr/bin/env php
+<?php
+
+class Markdown
+{
+    /**
+     * The default file/path to changelog.md to write.
+     *
+     * @var string
+     */
+    protected $changelog    = './changelog.md';
+
+    /**
+     * Parsed yaml file data.
+     *
+     * @var array
+     */
+    protected $data         = [];
+
+    /**
+     * Path to source yaml file.
+     *
+     * @var string
+     */
+    protected $input;
+
+    /**
+     * Path to output markdown file.
+     *
+     * @var string
+     */
+    protected $output;
+
+    /**
+     * The semantic version of this release.
+     *
+     * @var string
+     */
+    protected $version;
+
+    /**
+     * Get passed args to the script.
+     * 
+     */
+    public function __construct()
+    {
+        global $argv;
+
+        try {
+            $props  = $argv ?? [];
+            array_shift($props);
+
+            if(count($props) < 1) {
+                throw new Exception("Not enough parameters!");
+            }
+
+            $this->version  = $props[0] ?? null;
+            $this->input    = $props[1] ?? './release.yml';
+            $this->output   = $props[2] ?? './changelog.md';
+
+            if (! $this->version) {
+                throw new Exception("You need to define a release version.");
+            } elseif (! file_exists($this->input)) {
+                throw new Exception("Input file doesn't exist or path is invalid: {$this->input}.");
+            } elseif (file_exists($this->output)) {
+                throw new Exception("Output file path is invalid or can't overwrite: {$this->output}.");
+            } elseif (! preg_match('/^((([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)$/', $this->version)) {
+                throw new Exception("Version must be a valid semantic version.");
+            }
+
+            // make sure the input file is a valid yaml file (.yml or .yaml)
+            $inputExt   = strtoupper(pathinfo($this->input, PATHINFO_EXTENSION));
+
+            if ($inputExt != 'YAML' && $inputExt != 'YML') {
+                throw new Exception("A valid YAML input file is required: {$this->input}.");
+            }
+
+            // lastly parse the $input yaml file.
+            $this->data = yaml_parse(file_get_contents($this->input));
+
+        } catch (Exception $e) {
+            echo $e->getMessage();
+            exit(1);
+        }
+    }
+
+    /**
+     * Generate a table row for a feature in this release.
+     *
+     * @param string $description
+     * @param string|null $type
+     * @param mixed $issue
+     * @param string|null $author
+     * @return string
+     */
+    protected function addMarkdownRow(string $description, ?string $type = null, $issue = null, ?string $author = null): string
+    {
+        $tpl        = "| :issue | :type :description | :author |\n";
+        $search     = [':issue', ':type', ':description', ':author'];
+        $replace    = [
+            ($issue ?? ''),
+            ($type ? "**{$type}:**" : ''),
+            $description,
+            ($author ?? '')
+        ];
+
+        return str_replace($search, $replace, $tpl);
+    }
+
+    /**
+     * Create the beginning part of the markdown file.
+     *
+     * @param string $version
+     * @param string|null $name
+     * @return string
+     */
+    protected function getMarkdownHeader(string $version, ?string $name): string
+    {
+        $tpl        = "# v:version :name\n\n"
+            . "## Changelog\n"
+            . "| # | Feature | Completed By |\n"
+            . "|:-:|---|---|\n";
+        $search     = [':version', ':name'];
+        $replace    = [
+            $version,
+            ($name ? "({$name})" : ''),
+        ];
+
+        return str_replace($search, $replace, $tpl);
+    }
+
+    /**
+     * Generates the markdown from the yaml file.
+     *
+     * @return string
+     */
+    protected function createMarkdown(): string
+    {
+
+        $release    = $this->getCurrentRelease();
+        $markdown   = $this->getMarkdownHeader($release['version'], $release['name'] ?? null);
+
+        foreach ($release['changes'] as $change) {
+            $markdown .= $this->addMarkdownRow($change['description'], $change['type'] ?? null, $change['issue'] ?? null, $change['author'] ?? null);
+        }
+
+        return $markdown;
+    }
+
+    /**
+     * Returns the release information that matches $this->version.
+     * 
+     * @throws Exception if a release version can't be matched.
+     *
+     * @return array
+     */
+    protected function getCurrentRelease(): array
+    {
+        foreach ($this->data['releases'] as $release) {
+            if ($release['version'] == $this->version) {
+                return $release;
+            }
+        }
+
+        // if we're here that means we didn't match a release version with a given one.
+        // that means we have a problem.
+        throw new Exception("A release version can't be matched with the given Version: {$this->version}.");
+    }
+
+    /**
+     * Create a new Markdown release.
+     *
+     * @return boolean
+     */
+    public function generate(): bool
+    {
+        try {
+            return !! file_put_contents(
+                $this->output,
+                $this->createMarkdown()
+            );
+        } catch (Exception $e) {
+            echo $e->getMessage();
+            exit(1);
+        }
+    }
+}
+ 
+(new Markdown)
+    ->generate();

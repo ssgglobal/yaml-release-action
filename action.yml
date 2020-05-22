@@ -1,0 +1,25 @@
+name: 'Generate changelog from Release YAML'
+description: 'Generate a changelog.md file from a release.yml file'
+inputs:
+    version:
+        description: 'The version being released.'
+        required: true
+    release:
+        description: 'The release.yml file to parse.'
+        required: true
+        default: './release.yml'
+    
+    markdown:
+        description: 'The changelog.md file to create.'
+        required: true
+        default: './changelog.md'
+outputs:
+    status:
+        description: 'Was the action successful or not?'
+runs:
+    using: 'docker'
+    image: 'Dockerfile'
+    args: 
+        - ${{ inputs.version }}
+        - ${{ inputs.release }}
+        - ${{ inputs.markdown }}
