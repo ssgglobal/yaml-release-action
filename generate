@@ -117,7 +117,7 @@ class Markdown
     protected function getMarkdownHeader(string $version, ?string $name): string
     {
         $tpl        = "# v:version :name\n\n"
-            . "## Changelog\n"
+            . "## Changelog\n\n"
             . "| # | Feature | Completed By |\n"
             . "|:-:|---|---|\n";
         $search     = [':version', ':name'];
