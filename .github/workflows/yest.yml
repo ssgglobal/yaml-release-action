@@ -27,13 +27,12 @@ jobs:
       - name: Set changlog.md data in env var
         run: |
           echo ::set-env name=REL_NAME::$(head -n 1 ./changelog.md)
-          echo ::set-env name=REL_CHANGELOG::$(cat -e ./changelog.md)
 
       - name: Tag release
-        uses: actions/create-release@v1
+        uses: jbolda/create-release@v1.1.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: 'v${{ env.REL_VERSION }}'
           release_name: ${{ env.REL_NAME }}
-          body: ${{ env.REL_CHANGELOG }}
+          body_path: ./changelog.md
