@@ -27,7 +27,7 @@ jobs:
       - name: Set changlog.md data in env var
         run: |
           echo ::set-env name=REL_NAME::$(head -n 1 ./changelog.md)
-          echo ::set-env name=REL_CHANGELOG::$(tail -n +2 ./changelog.md)
+          echo ::set-env name=REL_CHANGELOG::$(cat -e ./changelog.md)
 
       - name: Tag release
         uses: actions/create-release@v1
