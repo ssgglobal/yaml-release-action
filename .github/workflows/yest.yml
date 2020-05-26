@@ -35,4 +35,4 @@ jobs:
         with:
           tag_name: 'v${{ env.REL_VERSION }}'
           release_name: ${{ env.REL_NAME }}
-          body_path: ./changelog.md
+          body_path: changelog.md
