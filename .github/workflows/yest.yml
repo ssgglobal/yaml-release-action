@@ -24,11 +24,16 @@ jobs:
           release: './release.yml'
           markdown: './changelog.md'
 
+      - name: Set changlog.md data in env var
+        run: |
+          echo ::set-env name=REL_NAME::$(head -n 1 ./changelog.md)
+          echo ::set-env name=REL_CHANGELOG::$(tail -n +2 ./changelog.md)
+
       - name: Tag release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: 'v${{ env.REL_VERSION }}'
-          release_name: head -n 1 ./changelog.md
-          body: cat ./changelog.md
+          release_name: ${{ env.REL_NAME }}
+          body: ${{ env.REL_CHANGELOG }}
