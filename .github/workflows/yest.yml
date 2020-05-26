@@ -29,7 +29,7 @@ jobs:
           echo ::set-env name=REL_NAME::$(head -n 1 ./changelog.md | tr -d '#')
 
       - name: Tag release
-        uses: jbolda/create-release@v1.1.0
+        uses: ssgglobal/create-release@v1.1.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
