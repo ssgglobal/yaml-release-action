@@ -26,7 +26,7 @@ jobs:
 
       - name: Set changlog.md data in env var
         run: |
-          echo ::set-env name=REL_NAME::$(head -n 1 ./changelog.md)
+          echo ::set-env name=REL_NAME::$(head -n 1 ./changelog.md | tr -d '#')
 
       - name: Tag release
         uses: jbolda/create-release@v1.1.0
