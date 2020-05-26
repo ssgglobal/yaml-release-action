@@ -27,7 +27,7 @@ jobs:
       - name: Tag release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.DSEBOT_GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: 'v${{ env.REL_VERSION }}'
           release_name: head -n 1 ./changelog.md
