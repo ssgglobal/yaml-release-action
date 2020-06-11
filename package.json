@@ -1,0 +1,30 @@
+{
+  "name": "yaml-release-action",
+  "version": "2.0.0",
+  "description": "Generate a changelog markdown from a release yaml file.",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ssgglobal/yaml-release-action.git"
+  },
+  "keywords": [
+    "actions",
+    "node"
+  ],
+  "author": "StepStone DSE",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ssgglobal/yaml-release-action/issues"
+  },
+  "homepage": "https://github.com/ssgglobal/yaml-release-action#readme",
+  "dependencies": {
+    "@actions/core": "^1.2.4",
+    "@actions/exec": "^1.0.4"
+  },
+  "devDependencies": {
+    "@zeit/ncc": "^0.22.3"
+  }
+}
