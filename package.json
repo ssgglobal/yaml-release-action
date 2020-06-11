@@ -22,7 +22,8 @@
   "homepage": "https://github.com/ssgglobal/yaml-release-action#readme",
   "dependencies": {
     "@actions/core": "^1.2.4",
-    "@actions/exec": "^1.0.4"
+    "@actions/exec": "^1.0.4",
+    "yaml": "^1.10.0"
   },
   "devDependencies": {
     "@zeit/ncc": "^0.22.3"
