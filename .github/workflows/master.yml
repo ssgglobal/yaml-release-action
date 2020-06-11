@@ -1,0 +1,39 @@
+name: Master
+
+on:
+  push:
+    branches: 
+      - master
+
+jobs:
+  build:
+    name: Release Version
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Get Version
+        run: echo ::set-env name=REL_VERSION::$(cat ./version)
+
+      - name: Create changlog.md
+        uses: ssgglobal/yaml-release-action@master
+        with:
+          version: ${{ env.REL_VERSION }}
+          release: './release.yml'
+          markdown: './changelog.md'
+
+      - name: Set changlog.md data in env var
+        run: |
+          echo ::set-env name=REL_NAME::$(head -n 1 ./changelog.md | tr -d '#')
+
+      - name: Tag release
+        uses: ssgglobal/create-release@v1.2.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: 'v${{ env.REL_VERSION }}'
+          target_commitish: 'master'
+          release_name: ${{ env.REL_NAME }}
+          body_path: changelog.md
