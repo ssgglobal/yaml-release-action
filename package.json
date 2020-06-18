@@ -4,6 +4,7 @@
   "description": "Generate a changelog markdown from a release yaml file.",
   "main": "dist/index.js",
   "scripts": {
+    "build": "ncc build src/main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
