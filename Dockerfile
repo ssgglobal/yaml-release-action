@@ -7,4 +7,4 @@ RUN apt-get update \
 
 COPY ./generate /generate
 
-#ENTRYPOINT ["/usr/bin/php", "/generate" ]
+ENTRYPOINT ["/usr/bin/php", "/generate" ]
